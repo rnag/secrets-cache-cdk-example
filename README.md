@@ -10,62 +10,85 @@ It creates:
 
 ---
 
+# Getting Started
+
+This project shows how to use [`secrets-cache`](https://pypi.org/project/secrets-cache/) inside an AWS Lambda function, with AWS CDK managing the infrastructure.
+
 ## Prerequisites
 
-If you’re new to AWS/CDK, here’s what you’ll need:
+Before you begin, make sure you have the following installed and configured:
 
-1. **AWS Account** → [Sign up here](https://aws.amazon.com/free/) (the free tier is enough).
-2. **AWS CLI** → [Install guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+* **AWS Account** → [Sign up here](https://aws.amazon.com/free/) (free tier is enough for this example).
+* [**AWS CLI**](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html):
 
-   ```bash
-   aws configure
-   ```
-
+  ```bash
+  aws configure
+  ```
    (set your access key, secret key, default region).
-3. **CDK Toolkit**
+* [**AWS CDK Toolkit**](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html):
 
-   ```bash
-   npm install -g aws-cdk
-   ```
-4. **First-time setup (per account/region)**
+  ```bash
+  npm install -g aws-cdk
+  ```
+* [**Docker**](https://docs.docker.com/get-docker/):
 
-   ```bash
-   cdk bootstrap
-   ```
+  > CDK uses Docker under the hood to package Lambda dependencies (like `secrets-cache`).
+
+The first time you deploy CDK resources in your AWS account, you’ll also need to bootstrap it:
+
+```bash
+cdk bootstrap
+```
 
 ---
 
-## Getting Started
+## Setup
 
-Clone this repo and set up a Python virtual environment:
+Clone the repo and create a virtual environment:
 
 ```bash
 git clone https://github.com/rnag/secrets-cache-cdk-example.git
 cd secrets-cache-cdk-example
-
 python3 -m venv .venv
-source .venv/bin/activate   # (on Windows: .venv\Scripts\activate)
-
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 ---
 
-## Deploy the Stack
+## Deploy
 
-Synthesize and deploy with:
+Synthesize the CloudFormation template:
 
 ```bash
 cdk synth
+```
+
+Deploy the stack:
+
+```bash
 cdk deploy
 ```
 
 This will:
 
-* Deploy the stack
-* Show you the Lambda’s outputs in the terminal
+* Create a sample secret in **AWS Secrets Manager**
+* Create a parameter in **SSM Parameter Store**
+* Deploy a Lambda function that uses `secrets-cache` to read them
 
 ---
+
+
+After deployment, invoke the Lambda:
+
+```bash
+aws lambda invoke \
+  --function-name CdkExampleStack-TestLambda \
+  out.json
+cat out.json
+```
+
+You should see the cached secret/parameter values printed in the response.
 
 ## Clean Up
 
