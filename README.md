@@ -84,11 +84,15 @@ After deployment, invoke the Lambda:
 ```bash
 aws lambda invoke \
   --function-name CdkExampleStack-TestLambda \
-  out.json
-cat out.json
+  --log-type Tail \
+  --query 'LogResult' \
+  --output text \
+  out.json | base64 --decode
 ```
 
-You should see the cached secret/parameter values printed in the response.
+You should see the time taken to fetch the secret and parameter printed in the terminal (in milliseconds). 
+These logs demonstrate how `py-secrets-cache` caches values between Lambda invocations (warm starts).
+The Lambda’s actual return value is written to `out.json`, but the timing logs are printed in real time.
 
 ## Clean Up
 

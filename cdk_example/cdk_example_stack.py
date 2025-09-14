@@ -1,6 +1,5 @@
 from constructs import Construct
 from aws_cdk import (
-    Duration,
     Stack,
     aws_lambda as _lambda,
     aws_secretsmanager as secretsmanager,
@@ -30,17 +29,23 @@ class CdkExampleStack(Stack):
             string_value="hello-world"
         )
 
+        # noinspection PyTypeChecker
+        runtime: _lambda.Runtime = _lambda.Runtime.PYTHON_3_13
+
         # Lambda function
         test_lambda = _lambda.Function(
             self, "TestLambda",
-            runtime=_lambda.Runtime.PYTHON_3_12,
+            function_name='CdkExampleStack-TestLambda',
+            runtime=runtime,
             handler="lambda_function.handler",  # function inside your lambda file
             code=_lambda.Code.from_asset(
                 path="lambda",
                 bundling={
-                    "image": _lambda.Runtime.PYTHON_3_12.bundling_image,
+                    "image": runtime.bundling_image,
                     "command": ["bash", "-c",
-                                "pip install -r requirements.txt -t /asset-output && find /asset-output -name '*.dist-info' -type d -exec rm -rf {} + && cp -r . /asset-output"],
+                                "pip install -r requirements.txt -t /asset-output "
+                                "&& find /asset-output -name '*.dist-info' -type d -exec rm -rf {} + "
+                                "&& cp -r . /asset-output"],
                 }
             ),
             environment={
