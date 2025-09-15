@@ -1,5 +1,6 @@
 from constructs import Construct
 from aws_cdk import (
+    Duration,
     Stack,
     aws_lambda as _lambda,
     aws_secretsmanager as secretsmanager,
@@ -37,6 +38,8 @@ class CdkExampleStack(Stack):
             self, "TestLambda",
             function_name='CdkExampleStack-TestLambda',
             runtime=runtime,
+            timeout=Duration.seconds(60),
+            memory_size=256,
             handler="lambda_function.handler",  # function inside your lambda file
             code=_lambda.Code.from_asset(
                 path="lambda",
